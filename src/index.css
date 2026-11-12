@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-arabic: 'Cairo', 'Amiri', 'Traditional Arabic', serif;
+  }
+}
+
+.font-arabic {
+  font-family: 'Cairo', 'Amiri', 'Traditional Arabic', serif;
+  direction: rtl;
+}
+
+.font-arabic-inline {
+  font-family: 'Cairo', 'Amiri', 'Traditional Arabic', serif;
+}
+
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+/* Custom scrollbar for clean gamer UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.7);
+}
+
+/* Safe area support for mobile notch and navigation bars */
+.safe-pb {
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+.safe-pt {
+  padding-top: max(env(safe-area-inset-top), 16px);
+}
+.safe-px {
+  padding-left: max(env(safe-area-inset-left), 16px);
+  padding-right: max(env(safe-area-inset-right), 16px);
+}
+
+/* Prevent unwanted mobile callouts/selection */
+* {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}

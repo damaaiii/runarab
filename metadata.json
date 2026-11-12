@@ -1,0 +1,6 @@
+{
+  "name": "Rihlatul Mughamarah - Arabic Learning Adventure",
+  "description": "Game edukasi Bahasa Arab endless runner 3-lane bertema petualangan Timur Tengah yang interaktif dengan integrasi 5 keterampilan berbahasa, tantangan kuis, dan AI Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
