@@ -15,7 +15,7 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ callbacks, onSceneReady 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Destroy existing instance if any
+    // Clean up previous instance if any
     if (gameRef.current) {
       gameRef.current.destroy(true);
       gameRef.current = null;
@@ -24,12 +24,16 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ callbacks, onSceneReady 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       parent: containerRef.current,
-      width: 720,
-      height: 540,
-      backgroundColor: '#1e1b4b',
+      width: 800,
+      height: 600,
+      backgroundColor: '#172554',
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+      render: {
+        antialias: true,
+        pixelArt: false,
       },
       physics: {
         default: 'arcade',
@@ -44,17 +48,32 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ callbacks, onSceneReady 
     const game = new Phaser.Game(config);
     gameRef.current = game;
 
-    // Wait for scene to boot
-    game.events.once('ready', () => {
+    // Listen for scene readiness
+    const checkScene = () => {
       const scene = game.scene.getScene('ArabicRunnerScene') as ArabicRunnerScene;
-      sceneRef.current = scene;
-      scene.scene.restart({ callbacks });
-      if (onSceneReady) {
-        onSceneReady(scene);
+      if (scene) {
+        sceneRef.current = scene;
+        scene.setCallbacks(callbacks);
+        if (onSceneReady) {
+          onSceneReady(scene);
+        }
+      } else {
+        setTimeout(checkScene, 50);
       }
-    });
+    };
+
+    game.events.once('ready', checkScene);
+
+    // Also trigger on window resize
+    const handleResize = () => {
+      if (gameRef.current?.scale) {
+        gameRef.current.scale.refresh();
+      }
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;
@@ -62,11 +81,20 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ callbacks, onSceneReady 
     };
   }, []);
 
+  // Update callbacks reference if prop changes
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.setCallbacks(callbacks);
+    }
+  }, [callbacks]);
+
   return (
     <div className="relative w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
       <div
         ref={containerRef}
-        className="w-full h-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl"
+        id="phaser-game-container"
+        className="w-full h-full flex items-center justify-center overflow-hidden"
+        style={{ touchAction: 'none' }}
       />
     </div>
   );

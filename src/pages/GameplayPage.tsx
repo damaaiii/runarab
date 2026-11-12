@@ -19,7 +19,6 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowDown,
-  Shield,
   Zap,
 } from 'lucide-react';
 
@@ -119,10 +118,22 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
   };
 
   // Virtual buttons for mobile controls
-  const handleVirtualLeft = () => sceneRef.current?.moveLane(-1);
-  const handleVirtualRight = () => sceneRef.current?.moveLane(1);
-  const handleVirtualJump = () => sceneRef.current?.jump();
-  const handleVirtualSlide = () => sceneRef.current?.slide();
+  const handleVirtualLeft = (e: React.PointerEvent) => {
+    e.preventDefault();
+    sceneRef.current?.moveLane(-1);
+  };
+  const handleVirtualRight = (e: React.PointerEvent) => {
+    e.preventDefault();
+    sceneRef.current?.moveLane(1);
+  };
+  const handleVirtualJump = (e: React.PointerEvent) => {
+    e.preventDefault();
+    sceneRef.current?.jump();
+  };
+  const handleVirtualSlide = (e: React.PointerEvent) => {
+    e.preventDefault();
+    sceneRef.current?.slide();
+  };
 
   const callbacks: GameEventCallbacks = {
     onScoreUpdate: (s, c, d) => {
@@ -142,18 +153,18 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
   return (
     <div className="relative w-full h-[100dvh] bg-slate-950 flex flex-col justify-between overflow-hidden select-none">
       {/* Top HUD Overlay */}
-      <header className="absolute top-0 inset-x-0 z-30 p-2 sm:p-4 flex items-center justify-between safe-pt pointer-events-none">
-        {/* Left: Hearts & Theme Info */}
+      <header className="absolute top-0 inset-x-0 z-30 px-3 py-2.5 sm:px-6 sm:py-4 flex items-center justify-between safe-pt pointer-events-none">
+        {/* Left: Lives & Theme Badge */}
         <div className="flex items-center gap-2 pointer-events-auto">
           {/* Lives Indicator */}
-          <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-rose-500/50 shadow-lg">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-rose-500/60 shadow-lg">
             {[1, 2, 3].map((heartIndex) => (
               <Heart
                 key={heartIndex}
                 className={`w-5 h-5 transition-transform ${
                   heartIndex <= lives
-                    ? 'text-rose-500 fill-rose-500 scale-100'
-                    : 'text-slate-600 fill-slate-700 scale-90'
+                    ? 'text-rose-500 fill-rose-500 scale-100 animate-pulse'
+                    : 'text-slate-600 fill-slate-800 scale-75 opacity-50'
                 }`}
               />
             ))}
@@ -166,30 +177,30 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
           </div>
         </div>
 
-        {/* Center: Power-Up Pill if active */}
+        {/* Center: Power-Up Active Notification Pill */}
         {activePowerUp && (
-          <div className="pointer-events-auto px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-xs shadow-xl animate-pulse flex items-center gap-1.5">
+          <div className="pointer-events-auto px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black text-xs shadow-xl animate-bounce flex items-center gap-1.5">
             <Zap className="w-4 h-4 fill-slate-950" />
             <span>{activePowerUp.name}</span>
           </div>
         )}
 
-        {/* Right: Score, Coins, Distance, Pause */}
+        {/* Right: Coins, Score, Distance & Pause */}
         <div className="flex items-center gap-2 pointer-events-auto">
           {/* Coins */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-yellow-500/50 text-xs font-black text-yellow-300 shadow-lg">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md border border-yellow-500/60 text-xs font-black text-yellow-300 shadow-lg">
             <Coins className="w-4 h-4 text-yellow-400 fill-yellow-400" />
             <span>{coins}</span>
           </div>
 
           {/* Score */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-amber-500/50 text-xs font-black text-amber-200 shadow-lg">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md border border-amber-500/60 text-xs font-black text-amber-200 shadow-lg">
             <Trophy className="w-4 h-4 text-amber-400" />
             <span>{score}</span>
           </div>
 
           {/* Distance */}
-          <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-emerald-500/50 text-xs font-bold text-emerald-300 shadow-lg">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md border border-emerald-500/60 text-xs font-bold text-emerald-300 shadow-lg">
             <Footprints className="w-4 h-4 text-emerald-400" />
             <span>{distance}m</span>
           </div>
@@ -197,7 +208,7 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
           {/* Pause Button */}
           <button
             onClick={handlePauseToggle}
-            className="p-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white border border-slate-700 shadow-lg active:scale-90 transition-all cursor-pointer"
+            className="p-2.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white border border-amber-400/50 shadow-lg active:scale-90 transition-all cursor-pointer"
             title="Jeda Permainan"
           >
             {isPaused ? <Play className="w-4 h-4 fill-white" /> : <Pause className="w-4 h-4 fill-white" />}
@@ -205,8 +216,8 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
         </div>
       </header>
 
-      {/* Main Runner Canvas */}
-      <div className="flex-1 w-full h-full relative">
+      {/* Main Runner Canvas (Fills entire screen) */}
+      <div className="w-full h-full flex-1 relative flex items-center justify-center overflow-hidden">
         <PhaserGame
           callbacks={callbacks}
           onSceneReady={(scene) => {
@@ -214,54 +225,54 @@ export const GameplayPage: React.FC<GameplayPageProps> = ({
           }}
         />
 
-        {/* Loading Quiz Indicator */}
+        {/* Loading Quiz Portal Overlay */}
         {isLoadingQuiz && (
-          <div className="absolute inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center">
-            <div className="p-5 bg-amber-900/90 rounded-2xl border-2 border-amber-400 text-white text-center space-y-2 shadow-2xl animate-pulse">
-              <span className="font-arabic text-3xl font-black text-amber-300">مَخْطُوطَةُ الْعِلْمِ</span>
-              <p className="text-sm font-bold">Membuka Gulungan Ilmu Bahasa Arab...</p>
+          <div className="absolute inset-0 z-40 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center">
+            <div className="p-6 bg-gradient-to-b from-amber-900 to-amber-950 rounded-3xl border-2 border-amber-400 text-white text-center space-y-2 shadow-2xl animate-pulse">
+              <span className="font-arabic text-4xl font-black text-amber-300">مَخْطُوطَةُ الْعِلْمِ</span>
+              <p className="text-sm font-bold text-amber-100">Membuka Gulungan Tantangan Bahasa Arab...</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Virtual Touch Controller (Mobile Ergonomics) */}
-      <div className="absolute bottom-2 inset-x-2 z-30 flex items-center justify-between safe-pb pointer-events-none px-2 sm:px-6">
-        {/* Left & Right Steering */}
+      {/* Virtual Touch Controller (Positioned in lower corners so track & character are clear) */}
+      <div className="absolute bottom-3 inset-x-3 z-30 flex items-center justify-between safe-pb pointer-events-none px-2 sm:px-6">
+        {/* Left Side: Steering Controls */}
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onPointerDown={handleVirtualLeft}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-amber-600 text-white border-2 border-amber-500/60 shadow-xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/65 backdrop-blur-md active:bg-amber-600/90 text-white border-2 border-amber-400/60 shadow-xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
             title="Geser Kiri"
           >
-            <ArrowLeft className="w-7 h-7" />
+            <ArrowLeft className="w-7 h-7 text-amber-200" />
           </button>
           <button
             onPointerDown={handleVirtualRight}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-amber-600 text-white border-2 border-amber-500/60 shadow-xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/65 backdrop-blur-md active:bg-amber-600/90 text-white border-2 border-amber-400/60 shadow-xl flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
             title="Geser Kanan"
           >
-            <ArrowRight className="w-7 h-7" />
+            <ArrowRight className="w-7 h-7 text-amber-200" />
           </button>
         </div>
 
-        {/* Jump & Slide Actions */}
+        {/* Right Side: Jump & Slide Action Controls */}
         <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onPointerDown={handleVirtualSlide}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-orange-600 text-white border-2 border-orange-500/60 shadow-xl flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/65 backdrop-blur-md active:bg-orange-600/90 text-white border-2 border-orange-400/60 shadow-xl flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer"
             title="Merunduk / Slide"
           >
-            <ArrowDown className="w-6 h-6" />
-            <span className="text-[9px] font-bold tracking-tight uppercase">Slide</span>
+            <ArrowDown className="w-6 h-6 text-orange-200" />
+            <span className="text-[9px] font-black tracking-tight uppercase text-orange-100">Slide</span>
           </button>
           <button
             onPointerDown={handleVirtualJump}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-emerald-600 text-white border-2 border-emerald-500/60 shadow-xl flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/65 backdrop-blur-md active:bg-emerald-600/90 text-white border-2 border-emerald-400/60 shadow-xl flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer"
             title="Lompat"
           >
-            <ArrowUp className="w-6 h-6" />
-            <span className="text-[9px] font-bold tracking-tight uppercase">Lompat</span>
+            <ArrowUp className="w-6 h-6 text-emerald-200" />
+            <span className="text-[9px] font-black tracking-tight uppercase text-emerald-100">Lompat</span>
           </button>
         </div>
       </div>
